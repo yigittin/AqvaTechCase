@@ -34,9 +34,9 @@ namespace Persistance.Repositories
         public async Task<bool> AddOrUpdateBulk<T>(IEnumerable<T> documents) where T : class
         {
             var indexResponse = await _client.BulkAsync(b => b
-                   .Index(_indexName)
-                   .UpdateMany(documents, (ud, d) => ud.Doc(d).DocAsUpsert(true))
-               );
+                    .Index(_indexName)
+                    .UpdateMany(documents, (ud, d) => ud.Doc(d).DocAsUpsert(true))
+                );
             return indexResponse.IsValid;
         }
         public async Task<bool> AddOrUpdate<T>(T document) where T : class

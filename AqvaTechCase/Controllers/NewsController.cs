@@ -7,6 +7,7 @@ using AqvaTechCase.Extensions;
 using AqvaTechCase.Models;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Nest;
 using System.Data;
 using System.Runtime.Intrinsics.X86;
@@ -55,7 +56,8 @@ namespace AqvaTechCase.Controllers
                     dataTable.draw = pagination.Draw;
                     dataTable.recordsFiltered = totalCount;
                 }
-            }       
+            }
+            _logger.LogInformation("Result : " + dataTable.data);
             return Ok(dataTable);
         }
         [HttpPost(Name = "UpdateNews")]
@@ -72,12 +74,18 @@ namespace AqvaTechCase.Controllers
                     Id = Guid.NewGuid(),
                     Url = index
                 });
+                _logger.LogInformation(index);
             }
-            bool result = await _newsRepository.AddOrUpdateBulk(documents.ToArray());
-            if (result)
-                return Ok();
-            else
-                return BadRequest();
+            try
+            {
+                bool result = await _newsRepository.AddOrUpdateBulk(documents.ToArray());
+                _logger.LogInformation("Res : "+result);
+                return Ok();           
+            }catch(Exception ex)
+            {
+                _logger.LogInformation("Exception : " + ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
